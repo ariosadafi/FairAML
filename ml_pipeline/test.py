@@ -7,6 +7,9 @@ from model import *  # actual MIL model
 from sklearn import metrics as metrics
 import csv
 
+
+exp = "sex"
+
 CLASSES = ['control', 'RUNX1_RUNX1T1', 'NPM1', 'CBFB_MYH11', 'PML_RARA']
 
 SOURCE_FOLDER = r'/Users/ario.sadafi/Desktop/dump4/TCIA_data_prepared'
@@ -67,75 +70,73 @@ def correct_order_classes(converter,auc):
     return out
 
 
+for kind in ["sex", "age"]:
+    for exp in range(5):
+        for fld in range(5):
+            expname = kind + str(exp) + "f" + str(fld)
+
+
+            class_converter = {}
+
+            with open(os.path.join(TARGET_FOLDER, expname, 'class_conversion.csv'), newline='') as csvfile:
+                reader = csv.reader(csvfile)
+                next(reader, None)
+                for line in reader:
+                    class_converter[line[1]] = int(line[0])
 
 
 
-for exp in range(5):
-    for fld in range(5):
-        expname = "exp"+str(exp)+"f"+str(fld)
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-        class_converter = {}
+            # load best performing model, and launch on test set
+            model = torch.load(os.path.join(TARGET_FOLDER, expname, "state_dictmodel.pt"),map_location="cpu")
+            model = model.to(device)
 
-        with open(os.path.join(TARGET_FOLDER, expname, 'class_conversion.csv'), newline='') as csvfile:
-            reader = csv.reader(csvfile)
-            next(reader, None)
-            for line in reader:
-                class_converter[line[1]] = int(line[0])
+            pred = []
+            gt = []
+            for p in tqdm(mTestset):
+                path, lbl_name = patients[p]
+                lbl = np.zeros(5)
+                lbl[class_converter[lbl_name]] = 1
 
+                bag = np.load(path)
 
+                bag = torch.tensor(bag).to(device)
+                bag = torch.unsqueeze(bag,0)
+                p, _, _, _ = model(bag)
+                pred.append(F.softmax(p,dim=1).cpu().detach().numpy())
+                gt.append(lbl)
 
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-
-        # load best performing model, and launch on test set
-        model = torch.load(os.path.join(TARGET_FOLDER, expname, "state_dictmodel.pt"),map_location="cpu")
-        model = model.to(device)
-
-        pred = []
-        gt = []
-        for p in tqdm(mTestset):
-            path, lbl_name = patients[p]
-            lbl = np.zeros(5)
-            lbl[class_converter[lbl_name]] = 1
-
-            bag = np.load(path)
-
-            bag = torch.tensor(bag).to(device)
-            bag = torch.unsqueeze(bag,0)
-            p, _, _, _ = model(bag)
-            pred.append(F.softmax(p,dim=1).cpu().detach().numpy())
-            gt.append(lbl)
-
-        macc, mauc_pr = calculate_metrics(pred, gt)
+            macc, mauc_pr = calculate_metrics(pred, gt)
 
 
-        pred = []
-        gt = []
-        for p in tqdm(fTestset):
-            path, lbl_name = patients[p]
-            lbl = np.zeros(5)
-            lbl[class_converter[lbl_name]] = 1
+            pred = []
+            gt = []
+            for p in tqdm(fTestset):
+                path, lbl_name = patients[p]
+                lbl = np.zeros(5)
+                lbl[class_converter[lbl_name]] = 1
 
-            bag = np.load(path)
+                bag = np.load(path)
 
-            bag = torch.tensor(bag).to(device)
-            bag = torch.unsqueeze(bag,0)
-            p, _, _, _ = model(bag)
-            pred.append(F.softmax(p,dim=1).cpu().detach().numpy())
-            gt.append(lbl)
+                bag = torch.tensor(bag).to(device)
+                bag = torch.unsqueeze(bag,0)
+                p, _, _, _ = model(bag)
+                pred.append(F.softmax(p,dim=1).cpu().detach().numpy())
+                gt.append(lbl)
 
-        facc, fauc_pr = calculate_metrics(pred, gt)
+            facc, fauc_pr = calculate_metrics(pred, gt)
 
-        # print(macc, mauc_pr)
-        # print(facc, fauc_pr)
+            # print(macc, mauc_pr)
+            # print(facc, fauc_pr)
 
-        mauc_pr = correct_order_classes(class_converter, mauc_pr)
-        fauc_pr = correct_order_classes(class_converter, fauc_pr)
+            mauc_pr = correct_order_classes(class_converter, mauc_pr)
+            fauc_pr = correct_order_classes(class_converter, fauc_pr)
 
-        # print(macc, mauc_pr)
-        # print(facc, fauc_pr)
-        Test_results[expname] = [macc,facc,mauc_pr,fauc_pr]
+            # print(macc, mauc_pr)
+            # print(facc, fauc_pr)
+            Test_results[expname] = [macc,facc,mauc_pr,fauc_pr]
 
 with open("test_results.pkl", "wb") as f:
     pickle.dump(Test_results, f)
