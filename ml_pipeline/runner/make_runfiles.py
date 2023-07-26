@@ -35,7 +35,7 @@ for k in kind:
                     g.flush()
                     g.close()
 
-                sh.writelines("sb-" + k + "-" + exp + "-" + str(fld) + ".cmd\n")
+                sh.writelines("sbatch sb-" + k + "-" + exp + "-" + str(fld) + ".cmd\n")
             # sh.writelines("sleep 0.5\n")
 
 sh.flush()
