@@ -22,7 +22,7 @@ torch.multiprocessing.set_sharing_strategy('file_system')
 # results will be stored here
 TARGET_FOLDER = r'./output'
 # path to dataset
-SOURCE_FOLDER = r'/Users/ario.sadafi/Desktop/dump4/TCIA_data_prepared'
+SOURCE_FOLDER = r'/lustre/groups/labs/marr/qscd01/workspace/ario.sadafi/F_AML/TCIA_data_prepared'
 
 # get arguments from parser, set up folder
 # parse arguments
@@ -123,8 +123,8 @@ define_dataset(
 datasets = {}
 
 # set up folds for cross validation
-folds = {'train': np.array([0, 1, 2, 3]), 'val': np.array([
-    3]), 'test': np.array([4])}
+folds = {'train': np.array([0, 1, 2, 3, 4]), 'val': np.array([
+    3]), 'test': np.array([3,4])}
 for name, fold in folds.items():
     folds[name] = ((fold + int(args.fold)) % 5).tolist()
 

@@ -74,7 +74,7 @@ def define_dataset(
     print("Filtering the dataset...")
     print("")
 
-    with open("/Users/ario.sadafi/PycharmProjects/F_AML001/fairness_exp.dat", "rb") as f:
+    with open("/lustre/groups/labs/marr/qscd01/workspace/ario.sadafi/F_AML/FairAML/fairness_exp.dat", "rb") as f:
         explists = pickle.load(f)
 
     explist = explists[fairness_exp]
