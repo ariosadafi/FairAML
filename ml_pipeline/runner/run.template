@@ -1,10 +1,10 @@
 #!/bin/bash
 
-#SBATCH -o ./logs/out-@exp@-@fld@.txt
-#SBATCH -e ./logs/out-@exp@-@fld@.txt
+#SBATCH -o ./logs/out-@kind@-@exp@-@fld@.txt
+#SBATCH -e ./logs/out-@kind@-@exp@-@fld@.txt
 
-##SBATCH -J faml@exp@@fld@
-#SBATCH -J faml@exp@@fld@
+##SBATCH -J faml@kind@@exp@@fld@
+#SBATCH -J faml@kind@@exp@@fld@
 #SBATCH -p gpu_p
 
 #SBATCH --gres=gpu:1
@@ -20,6 +20,6 @@
 
 cd ..
 
-python3 run_pipeline.py --result_folder exp@exp@f@fld@ --fairexp @exp@ --fold @fld@
+python3 run_pipeline.py --result_folder @kind@@exp@f@fld@ --fairexp @exp@ --fold @fld@ --exptype @kind@
 
 
