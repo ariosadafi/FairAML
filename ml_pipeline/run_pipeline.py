@@ -34,6 +34,13 @@ parser.add_argument(
     required=True,
     default=1
 )
+parser.add_argument(
+    "--exptype",
+    help="",
+    required=True,
+    default="sex"
+)
+
 # Algorithm / training parameters
 parser.add_argument(
     '--fold',
@@ -115,6 +122,7 @@ define_dataset(
     prefix_in=args.prefix,
     label_converter_in=label_conv_obj,
     fairness_exp = int(args.fairexp),
+    exp_type=args.exptype,
     filter_diff_count=int(
         args.filter_diff),
     filter_quality_minor_assessment=int(
@@ -123,7 +131,7 @@ define_dataset(
 datasets = {}
 
 # set up folds for cross validation
-folds = {'train': np.array([0, 1, 2, 3]), 'val': np.array([
+folds = {'train': np.array([0, 1, 2, 3, 4]), 'val': np.array([
     3]), 'test': np.array([4])}
 for name, fold in folds.items():
     folds[name] = ((fold + int(args.fold)) % 5).tolist()
@@ -256,3 +264,5 @@ print('prefix', args.prefix)
 print('Runtime', time_str)
 print('max. Epochs', args.ep)
 print('Learning rate', args.lr)
+
+

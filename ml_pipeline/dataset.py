@@ -48,6 +48,7 @@ def define_dataset(
         label_converter_in=None,
         filter_diff_count=-1,
         fairness_exp=1,
+        exp_type = "age",
         filter_quality_major_assessment=True,
         filter_quality_minor_assessment=True):
     '''function needs to be called before constructing datasets. Gets an overview over the entire dataset, does filtering
@@ -74,8 +75,12 @@ def define_dataset(
     print("Filtering the dataset...")
     print("")
 
-    with open("/Users/ario.sadafi/PycharmProjects/F_AML001/fairness_exp.dat", "rb") as f:
-        explists = pickle.load(f)
+    if exp_type == "age":
+        with open("/Users/ario.sadafi/PycharmProjects/F_AML001/fairness_exp.dat", "rb") as f:
+            explists = pickle.load(f)
+    elif exp_type == "sex":
+        with open("/Users/ario.sadafi/PycharmProjects/F_AML001/age_fairness_exp.dat", "rb") as f:
+            explists = pickle.load(f)
 
     explist = explists[fairness_exp]
 
