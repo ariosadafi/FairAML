@@ -1,8 +1,7 @@
 import os
 
-experiments = ["1", "2", "3", "4"]
-#mths = ["lb", "ewc", "icarl", "ucicarl"]
-mths = ["mas"]
+experiments = ["0", "1", "2", "3", "4"]
+folds = [0,1,2,3,4]
 
 if os.path.exists("run.sh"):
     os.remove("run.sh")
@@ -15,43 +14,22 @@ sh.writelines("#!/bin/bash\n\n")
 lines = f.readlines()
 
 for exp in experiments:
-    for mth in mths:
-        if os.path.exists("sb-" + exp + "-" + mth + ".cmd"):
-            os.remove("sb-" + exp + "-" + mth + ".cmd")
+    for fld in folds:
+        if os.path.exists("sb-" + exp + "-" + str(fld) + ".cmd"):
+            os.remove("sb-" + exp + "-" + str(fld) + ".cmd")
 for exp in experiments:
-    for mth in mths:
-        
-        if exp == "4":
-            for ds in ["aml", "pbc", "mll"]:
-                c = lines.copy()
-                for i in range(len(c)):
-                    c[i] = c[i].replace("@mth@", str(mth))
-                    c[i] = c[i].replace("@exp@", str(exp))
-                    c[i] = c[i].replace("@ds@", ds)
-
-
-                with open("sb-" + exp + "-" + mth + "-" + ds +".cmd", "w") as g:
-                    g.writelines(c)
-                    g.flush()
-                    g.close()
-                
-                sh.writelines("sbatch " + "sb-" + exp + "-" + mth + "-" + ds +".cmd\n")
-
-        
-        else: 
+    for fld in folds:
             c = lines.copy()
             for i in range(len(c)):
-                c[i] = c[i].replace("@mth@", str(mth))
+                c[i] = c[i].replace("@fld@", str(fld))
                 c[i] = c[i].replace("@exp@", str(exp))
-                c[i] = c[i].replace("@ds@", "")
 
-
-            with open("sb-" + exp + "-" + mth + ".cmd", "w") as g:
+            with open("sb-" + exp + "-" + str(fld) + ".cmd", "w") as g:
                 g.writelines(c)
                 g.flush()
                 g.close()
 
-            sh.writelines("sbatch " + "sb-" + exp + "-" + mth + ".cmd\n")
+            sh.writelines("sbatch " + "sb-" + exp + "-" + str(fld) + ".cmd\n")
         # sh.writelines("sleep 0.5\n")
 
 sh.flush()
