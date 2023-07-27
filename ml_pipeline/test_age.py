@@ -12,8 +12,8 @@ kind = "age"
 
 CLASSES = ['control', 'RUNX1_RUNX1T1', 'NPM1', 'CBFB_MYH11', 'PML_RARA']
 
-SOURCE_FOLDER = r'/Users/ario.sadafi/Desktop/dump4/TCIA_data_prepared'
-TARGET_FOLDER = r"/Users/ario.sadafi/PycharmProjects/F_AML/ml_pipeline/output/"
+SOURCE_FOLDER = r'/lustre/groups/labs/marr/qscd01/workspace/ario.sadafi/F_AML/TCIA_data_prepared'
+TARGET_FOLDER = r"/lustre/groups/labs/marr/qscd01/workspace/ario.sadafi/F_AML/FairAML/ml_pipeline/output/"
 
 patients = {}
 with open(os.path.join(SOURCE_FOLDER,'metadata.csv'), newline='') as csvfile:
@@ -28,7 +28,7 @@ with open(os.path.join(SOURCE_FOLDER,'metadata.csv'), newline='') as csvfile:
                                          "fnl34_bn_features_layer_7.npy"), line[3]]
 
 
-with open("/Users/ario.sadafi/PycharmProjects/F_AML001/ageTestset.dat.dat", "rb") as f:
+with open("/lustre/groups/labs/marr/qscd01/workspace/ario.sadafi/F_AML/FairAML/ageTestset.dat", "rb") as f:
     testlists = pickle.load(f)
 
 Test_results = {}
@@ -114,7 +114,7 @@ for exp in range(5):
 
         # print(macc, mauc_pr)
         # print(facc, fauc_pr)
-        Test_results[expname] = [auc, auc_pr]
+        Test_results[expname] = [acc, auc_pr]
 
 with open("test_results_age.pkl", "wb") as f:
     pickle.dump(Test_results, f)
