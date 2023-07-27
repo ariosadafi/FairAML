@@ -1,6 +1,6 @@
 art_lbl,true_lbl,s_train,s_val,s_test,size_tot
-0,RUNX1_RUNX1T1,28,6,6,40
-1,CBFB_MYH11,33,7,7,47
-2,PML_RARA,22,4,4,30
-3,NPM1,33,7,7,47
+0,RUNX1_RUNX1T1,20,4,4,28
+1,CBFB_MYH11,27,5,5,37
+2,PML_RARA,18,4,4,26
+3,NPM1,27,5,5,37
 4,control,59,12,12,83
