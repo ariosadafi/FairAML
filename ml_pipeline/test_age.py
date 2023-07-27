@@ -8,7 +8,7 @@ from sklearn import metrics as metrics
 import csv
 
 
-kind = "sex"
+kind = "age"
 
 CLASSES = ['control', 'RUNX1_RUNX1T1', 'NPM1', 'CBFB_MYH11', 'PML_RARA']
 
@@ -28,8 +28,8 @@ with open(os.path.join(SOURCE_FOLDER,'metadata.csv'), newline='') as csvfile:
                                          "fnl34_bn_features_layer_7.npy"), line[3]]
 
 
-with open("/Users/ario.sadafi/PycharmProjects/F_AML001/sexTestset.dat", "rb") as f:
-    mTestset, fTestset = pickle.load(f)
+with open("/Users/ario.sadafi/PycharmProjects/F_AML001/ageTestset.dat.dat", "rb") as f:
+    testlists = pickle.load(f)
 
 Test_results = {}
 
@@ -94,7 +94,7 @@ for exp in range(5):
 
         pred = []
         gt = []
-        for p in tqdm(mTestset):
+        for p in tqdm(testlists[exp]):
             path, lbl_name = patients[p]
             lbl = np.zeros(5)
             lbl[class_converter[lbl_name]] = 1
@@ -107,35 +107,14 @@ for exp in range(5):
             pred.append(F.softmax(p,dim=1).cpu().detach().numpy())
             gt.append(lbl)
 
-        macc, mauc_pr = calculate_metrics(pred, gt)
+        acc, auc_pr = calculate_metrics(pred, gt)
 
 
-        pred = []
-        gt = []
-        for p in tqdm(fTestset):
-            path, lbl_name = patients[p]
-            lbl = np.zeros(5)
-            lbl[class_converter[lbl_name]] = 1
-
-            bag = np.load(path)
-
-            bag = torch.tensor(bag).to(device)
-            bag = torch.unsqueeze(bag,0)
-            p, _, _, _ = model(bag)
-            pred.append(F.softmax(p,dim=1).cpu().detach().numpy())
-            gt.append(lbl)
-
-        facc, fauc_pr = calculate_metrics(pred, gt)
+        auc_pr = correct_order_classes(class_converter, auc_pr)
 
         # print(macc, mauc_pr)
         # print(facc, fauc_pr)
+        Test_results[expname] = [auc, auc_pr]
 
-        mauc_pr = correct_order_classes(class_converter, mauc_pr)
-        fauc_pr = correct_order_classes(class_converter, fauc_pr)
-
-        # print(macc, mauc_pr)
-        # print(facc, fauc_pr)
-        Test_results[expname] = [macc,facc,mauc_pr,fauc_pr]
-
-with open("test_results.pkl", "wb") as f:
+with open("test_results_age.pkl", "wb") as f:
     pickle.dump(Test_results, f)
